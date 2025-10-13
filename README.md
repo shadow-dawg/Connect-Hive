@@ -2,9 +2,6 @@
 
 > A modern, animated platform concept that connects **college students, developers, and tech enthusiasts** nearby to collaborate on ideas, form teams, and build impactful projects together.
 
-![ConnectHive Banner](https://your-image-link-here)  
-*(Add a preview screenshot or animated hero section GIF here)*
-
 ---
 
 ## 🚀 Overview
