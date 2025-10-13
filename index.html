@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ConnectHive — Where ideas meet people</title>
+
+  <!-- Fonts + Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root{
+      --yellow: #FFD54F;
+      --black: #0B0C10;
+      --cyan: #00FFF0;
+      --muted: #6b7280;
+      --glass: rgba(255,255,255,0.06);
+      --card: rgba(255,255,255,0.9);
+      --accent: linear-gradient(90deg,#FFD54F,#FFC107 60%, #00FFF0 160%);
+      --maxw: 1100px;
+      --radius: 14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,213,79,0.06), transparent),
+                  linear-gradient(180deg, #08090a 0%, #0b0c10 65%);
+      color: white;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+    }
+
+    /* --- Top nav --- */
+    .nav{
+      position:fixed; top:18px; left:50%; transform:translateX(-50%);
+      width:calc(100% - 48px); max-width:var(--maxw);
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 18px; gap:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: 12px; z-index:99; backdrop-filter: blur(8px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .brand{display:flex; gap:10px; align-items:center}
+    .logo{
+      width:44px; height:44px; border-radius:10px;
+      background:var(--yellow);
+      display:flex; align-items:center; justify-content:center; font-weight:700; color:#0b0c10;
+      box-shadow:0 6px 18px rgba(255,213,79,0.12), inset 0 -6px 16px rgba(0,0,0,0.08);
+    }
+    .nav a{color:rgba(255,255,255,0.85); text-decoration:none; margin-left:10px; font-weight:600}
+    .cta{
+      padding:10px 18px; border-radius:10px; background:var(--yellow); color:var(--black);
+      font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,0.3);
+      border:none; cursor:pointer;
+    }
+    .nav .links{display:flex; align-items:center; gap:12px}
+
+    /* --- Hero with honeycomb background --- */
+    .hero{
+      min-height:82vh; display:flex; align-items:center; justify-content:center; position:relative;
+      padding:120px 20px 80px;
+      overflow:visible;
+    }
+
+    /* honeycomb SVG tiled as background */
+    .honeycomb-bg{
+      position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0.12;
+      background-image: url('data:image/svg+xml;utf8,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 200 200">\
+        <defs>\
+          <pattern id=\"hex\" width=\"34\" height=\"30\" patternUnits=\"userSpaceOnUse\">\
+            <path d=\"M17 0 L34 8.66 L34 25.98 L17 34.64 L0 25.98 L0 8.66 Z\" fill=\"none\" stroke=\"rgba(255,215,79,0.6)\" stroke-width=\"0.8\"/>\
+          </pattern>\
+        </defs>\
+        <rect width=\"100%\" height=\"100%\" fill=\"url(%23hex)\"/></svg>');
+      transform: scale(2);
+      filter: blur(6px);
+    }
+
+    .hero-inner{
+      position:relative; z-index:2; width:100%; max-width:var(--maxw);
+      display:grid; grid-template-columns:1fr 480px; gap:32px; align-items:center;
+    }
+
+    .hero-left h1{
+      font-size: clamp(2rem, 4vw, 3.2rem); margin:0 0 12px; line-height:1.02;
+      background: linear-gradient(90deg,#fff 0%, #ffd54f 40%, #00fff0 100%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      font-weight:800;
+      text-shadow: 0 8px 36px rgba(0,0,0,0.65);
+    }
+    .tagline{font-size:1.05rem; color:rgba(255,255,255,0.9); margin-bottom:18px}
+    .hero-cta{display:flex; gap:12px; align-items:center}
+    .btn-primary{
+      background:var(--yellow); color:var(--black); padding:14px 20px; border-radius:999px; font-weight:800;
+      border:none; cursor:pointer; box-shadow:0 12px 36px rgba(255,213,79,0.12);
+      position:relative; overflow:hidden;
+    }
+    .btn-primary .ripple{
+      position:absolute; width:120px; height:120px; background:rgba(255,255,255,0.2); border-radius:50%;
+      transform: scale(0); top:50%; left:50%; translate:-50% -50%; pointer-events:none; transition:transform .6s ease;
+    }
+    .btn-primary:hover .ripple{ transform: scale(2.85); opacity:0.9 }
+
+    .hero-p{color:rgba(255,255,255,0.85); max-width:46ch; margin-top:12px}
+
+    /* right column mock globe/map card */
+    .hero-right{
+      position:relative; display:flex; flex-direction:column; gap:16px;
+      align-items:center; justify-content:center;
+    }
+    .map-card{
+      width:100%; max-width:480px; background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-radius:20px; padding:18px; border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    .map {
+      width:100%; height:320px; border-radius:12px; overflow:hidden; position:relative; background:linear-gradient(180deg,#061016 0%, #07121b 100%);
+      border: 1px solid rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center;
+    }
+    /* nodes */
+    .node{ position:absolute; width:12px; height:12px; border-radius:50%; background:var(--cyan); box-shadow:0 8px 22px rgba(0,255,240,0.12), 0 0 10px var(--cyan); transform:translate(-50%,-50%); cursor:pointer; transition:transform .18s}
+    .node.pulse{ box-shadow:0 12px 36px rgba(0,255,240,0.18), 0 0 18px rgba(0,255,240,0.12); animation: pop 2s infinite; }
+    @keyframes pop{0%{transform:translate(-50%,-50%) scale(.9)}50%{transform:translate(-50%,-50%) scale(1.2)}100%{transform:translate(-50%,-50%) scale(.95)}}
+
+    .node-tooltip{
+      position:absolute; transform:translate(-50%,-120%); background:rgba(255,255,255,0.06); padding:8px 12px; border-radius:10px; color:var(--yellow); font-weight:700; font-size:13px; display:none;
+      border:1px solid rgba(255,255,255,0.04);
+      white-space:nowrap;
+    }
+
+    /* --- Content sections --- */
+    section.content{padding:80px 20px; max-width:var(--maxw); margin:0 auto; position:relative; z-index:1}
+
+    .section-title{font-size:1.8rem; font-weight:700; margin-bottom:18px; color:var(--yellow)}
+    .muted{color:var(--muted); max-width:70ch; margin-bottom:22px; font-weight:500}
+
+    /* Problem cards */
+    .problem-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:18px; margin-top:22px}
+    .card{
+      background: rgba(255,255,255,0.03);
+      border-radius:14px; padding:18px; border:1px solid rgba(255,255,255,0.03); min-height:120px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .card h4{margin:0 0 8px; color:white}
+
+    /* Solution row */
+    .solutions{display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:center}
+    .feature-list{display:flex; flex-direction:column; gap:12px}
+    .feature-item{display:flex; gap:12px; align-items:flex-start}
+    .feature-item .dot{width:12px;height:12px;border-radius:3px;background:var(--yellow); margin-top:6px}
+
+    /* How it works steps */
+    .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px}
+    .step{background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.03)}
+    .step .num{background:var(--yellow); color: #0b0c10; display:inline-block; padding:6px 12px; border-radius:999px; font-weight:800; margin-bottom:10px}
+
+    /* Map interactive section */
+    .interactive-map{position:relative; margin-top:18px}
+    .canvas-network{position:absolute; inset:0; pointer-events:none}
+
+    /* Demo carousel */
+    .carousel{display:flex; gap:12px; align-items:center; justify-content:center}
+    .mockphone{width:260px; height:520px; border-radius:28px; background:linear-gradient(180deg,#f8fafc, #e6f0ff); color:black; display:flex; align-items:center; justify-content:center; font-weight:700; border:8px solid rgba(255,255,255,0.04); box-shadow: 0 20px 60px rgba(0,0,0,0.6)}
+    .carousel-controls{display:flex; gap:8px; justify-content:center; margin-top:12px}
+
+    /* Testimonials */
+    .testimonials{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px}
+    .testimonial{background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03)}
+
+    /* Counters */
+    .counters{display:flex; gap:18px; justify-content:center; margin-top:18px}
+    .counter{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:14px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); min-width:170px; text-align:center}
+
+    /* CTA */
+    .big-cta{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:28px; border-radius:18px; background:linear-gradient(90deg, rgba(255,213,79,0.08), rgba(0,255,240,0.03)); border:1px solid rgba(255,255,255,0.03); margin-top:28px}
+    .big-cta h2{margin:0; font-size:1.6rem}
+    .glow-btn{padding:14px 24px; border-radius:999px; border:none; cursor:pointer; background:linear-gradient(90deg,#ffd54f,#00fff0); color:#061016; font-weight:800; box-shadow:0 20px 60px rgba(0,255,240,0.08)}
+
+    /* Footer */
+    footer{padding:34px 20px; border-top:1px solid rgba(255,255,255,0.03); margin-top:48px; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .socials a{color:var(--cyan); margin-right:12px; text-decoration:none}
+    .footer-line{height:6px; background:linear-gradient(90deg,#ffd54f,#00fff0); border-radius:999px; margin-bottom:18px}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .hero-inner{grid-template-columns:1fr; text-align:center}
+      .hero-right{order:2}
+      .map-card{max-width:100%}
+      .solutions{grid-template-columns:1fr}
+      .steps{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media (max-width:520px){
+      .nav{left:12px; right:12px; transform:none; width:auto}
+      .steps{grid-template-columns:1fr}
+      .hero{padding-top:90px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="nav" role="navigation">
+    <div class="brand">
+      <div class="logo">CH</div>
+      <div>
+        <div style="font-weight:700">ConnectHive</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.5)">Where ideas meet people</div>
+      </div>
+    </div>
+
+    <div class="links">
+      <a href="#problem">Problem</a>
+      <a href="#solution">Solution</a>
+      <a href="#how">How</a>
+      <a href="#demo">Demo</a>
+      <a href="https://forms.gle/H557tSEfUg9bKGa17"><button class="cta" id="nav-join">Join Beta</button></a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero" id="home">
+    <div class="honeycomb-bg"></div>
+
+    <div class="hero-inner">
+
+      <div class="hero-left">
+        <h1>Where ideas meet people.</h1>
+        <div class="tagline">ConnectHive helps students and builders discover teammates, collaborate, and grow together.</div>
+
+        <div class="hero-cta">
+          <button class="btn-primary" id="joinBtn">
+            <span class="ripple"></span>
+            Join the Hive
+          </button>
+          <button class="btn-secondary" onclick="document.querySelector('#demo').scrollIntoView({behavior:'smooth'})" style="background:none;border:1px solid rgba(255,255,255,0.06);padding:12px 16px;border-radius:12px;color:rgba(255,255,255,0.90)">See Demo</button>
+        </div>
+
+        <p class="hero-p">A hyper-local network for students, creators and devs — discover collaborators nearby, form teams fast, and launch projects that actually ship.</p>
+      </div>
+
+      <div class="hero-right">
+        <div class="map-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:800">Local Hive</div>
+            <div style="font-size:12px;color:var(--muted)">Live • Nearby</div>
+          </div>
+          <div class="map" id="map">
+            <!-- nodes -->
+            <div class="node pulse" style="left:22%; top:28%" data-title="Aman — Designer"></div>
+            <div class="node" style="left:40%; top:58%" data-title="Priya — Developer"></div>
+            <div class="node pulse" style="left:70%; top:34%" data-title="Rohit — Filmmaker"></div>
+            <div class="node" style="left:60%; top:70%" data-title="Zara — ML"> </div>
+            <div class="node" style="left:32%; top:78%" data-title="Local Hackathon"></div>
+
+            <!-- tooltip -->
+            <div class="node-tooltip" id="nodeTooltip">User</div>
+
+            <!-- canvas for connecting lines -->
+            <canvas class="canvas-network" id="networkCanvas"></canvas>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; text-align:center; color:rgba(255,255,255,0.75); font-size:13px">
+          <strong>Map simulation</strong> • Hover nodes for quick info • Click to open profile (demo)
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- PROBLEM -->
+  <section id="problem" class="content" >
+    <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+      <div style="flex:1; min-width:260px;">
+        <div class="section-title">The problem with today’s networking</div>
+        <div class="muted">Students and builders often struggle to find collaborators nearby; great ideas stall because teams can't form quickly. Existing networks are broad, impersonal, and not focused on project formation.</div>
+      </div>
+
+      <div style="width:420px">
+        <div class="problem-grid">
+          <div class="card" data-anim> 
+            <h4>Hard to find like-minded collaborators</h4>
+            <div style="color:var(--muted)">Profiles are scattered across platforms and discovery is noisy.</div>
+          </div>
+          <div class="card" data-anim>
+            <h4>Projects die before they start</h4>
+            <div style="color:var(--muted)">Finding teammates takes too long — momentum is lost.</div>
+          </div>
+          <div class="card" data-anim>
+            <h4>No platform for student builders</h4>
+            <div style="color:var(--muted)">Tools aren’t tailored to student timelines and campus communities.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION -->
+  <section id="solution" class="content" style="padding-top:24px">
+    <div style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;">
+      <div style="flex:1; min-width:300px">
+        <div class="section-title">Here’s how ConnectHive changes that</div>
+        <div class="muted">A local-first network with AI matchmaker, project workspaces, and campus maps — designed to help student teams form and ship faster.</div>
+
+        <div class="solutions" style="margin-top:20px">
+          <div>
+            <div class="feature-list">
+              <div class="feature-item" data-anim>
+                <div class="dot"></div>
+                <div>
+                  <div style="font-weight:700">Smart matchmaking</div>
+                  <div style="color:var(--muted)">AI suggests teammates based on skills, availability and project goals.</div>
+                </div>
+              </div>
+
+              <div class="feature-item" data-anim>
+                <div class="dot"></div>
+                <div>
+                  <div style="font-weight:700">Nearby collaborations</div>
+                  <div style="color:var(--muted)">Campus and city maps highlight active hives nearby.</div>
+                </div>
+              </div>
+
+              <div class="feature-item" data-anim>
+                <div class="dot"></div>
+                <div>
+                  <div style="font-weight:700">Built-in chat & project spaces</div>
+                  <div style="color:var(--muted)">Project boards, repos and design spaces integrated from day one.</div>
+                </div>
+              </div>
+
+              <div class="feature-item" data-anim>
+                <div class="dot"></div>
+                <div>
+                  <div style="font-weight:700">Events & discovery</div>
+                  <div style="color:var(--muted)">Find hackathons, meetups and teammates in your area.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="min-width:300px">
+            <div style="background:rgba(255,255,255,0.02); border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,0.03)">
+              <div style="font-weight:800; margin-bottom:8px">Interactive Map Preview</div>
+              <div style="color:var(--muted); font-size:13px">Hover any node to preview users and project snippets. Nodes connect automatically to show collaboration lines.</div>
+              <div style="height:180px; margin-top:12px; border-radius:10px; overflow:hidden; background: linear-gradient(180deg,#021018,#08121a); display:flex; align-items:center; justify-content:center; color:var(--muted)">
+                <em>Live map animation (demo)</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="content" style="padding-top:18px">
+    <div>
+      <div class="section-title">How it works</div>
+      <div class="muted">A lightweight workflow to discover, match, and build with teammates near you.</div>
+
+      <div class="steps" style="margin-top:18px">
+        <div class="step" data-anim>
+          <div class="num">1</div>
+          <div style="font-weight:700;margin-top:8px">Create your Hive Profile</div>
+          <div style="color:var(--muted); margin-top:8px">Skills, interests, tools, and availability.</div>
+        </div>
+        <div class="step" data-anim>
+          <div class="num">2</div>
+          <div style="font-weight:700;margin-top:8px">Set skills & interests</div>
+          <div style="color:var(--muted); margin-top:8px">Choose roles you want to play on projects.</div>
+        </div>
+        <div class="step" data-anim>
+          <div class="num">3</div>
+          <div style="font-weight:700;margin-top:8px">Discover & Connect</div>
+          <div style="color:var(--muted); margin-top:8px">Map-based discovery + AI suggestions.</div>
+        </div>
+        <div class="step" data-anim>
+          <div class="num">4</div>
+          <div style="font-weight:700;margin-top:8px">Collaborate & Ship</div>
+          <div style="color:var(--muted); margin-top:8px">Project tools, chat, and workspace ready to go.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE MAP SECTION -->
+  <section id="interactive" class="content" style="padding-top:24px">
+    <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+      <div style="flex:1; min-width:320px">
+        <div class="section-title">Interactive map</div>
+        <div class="muted">Nodes represent students and projects across nearby campuses. Hover to preview, click to open snippets.</div>
+
+        <div class="interactive-map" style="margin-top:18px; height:420px; border-radius:16px; overflow:hidden; position:relative; background:linear-gradient(180deg,#041016,#08141a); border:1px solid rgba(255,255,255,0.03)">
+          <canvas id="interactiveCanvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+
+          <!-- mock nodes positioned with JS for demo -->
+          <div class="node" style="left:14%; top:36%" data-title="Ravi — Backend" data-desc="Looking for frontend dev"></div>
+          <div class="node pulse" style="left:26%; top:18%" data-title="Sima — UI/UX" data-desc="Open for short projects"></div>
+          <div class="node" style="left:44%; top:52%" data-title="Vik — Mobile" data-desc="Has a small team"></div>
+          <div class="node" style="left:68%; top:34%" data-title="Nisha — Data" data-desc="Seeking ML partner"></div>
+          <div class="node pulse" style="left:82%; top:64%" data-title="Hackathon • DTU" data-desc="Event on Nov 9"></div>
+
+          <div id="hoverCard" style="position:absolute; display:none; background:rgba(0,0,0,0.6); padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.03)"></div>
+        </div>
+      </div>
+
+      <div style="width:360px">
+        <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03)">
+          <div style="font-weight:800">Map controls</div>
+          <div style="color:var(--muted); margin-top:8px">Simulate filters and see nodes connect in real time.</div>
+
+          <div style="display:flex; gap:8px; margin-top:12px">
+            <button onclick="filterNodes('all')" style="padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:none;color:white;cursor:pointer">All</button>
+            <button onclick="filterNodes('dev')" style="padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:none;color:white;cursor:pointer">Developers</button>
+            <button onclick="filterNodes('design')" style="padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:none;color:white;cursor:pointer">Designers</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; color:var(--muted); font-size:13px">Click a node to simulate opening a profile (demo-only)</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- CTA -->
+  <section class="content" style="padding-top:18px">
+    <div class="big-cta" style="align-items:center">
+      <div>
+        <h2>Join the Hive. Build the Future.</h2>
+        <div style="color:var(--muted); margin-top:8px">Sign up for early access and help shape the next generation of student-built projects.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="https://forms.gle/H557tSEfUg9bKGa17"><button class="glow-btn" id="signupBtn">Reserve my spot</button></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-line"></div>
+
+    <div style="max-width:var(--maxw); margin:0 auto; display:flex; justify-content:space-between; gap:20px; align-items:center; flex-wrap:wrap">
+      <div>
+        <div style="font-weight:800">ConnectHive</div>
+        <div style="color:var(--muted); font-size:13px">Made by builders, for builders.</div>
+      </div>
+      <div class="socials">
+        <a href="x.com/TMonticore22364" aria-label="twitter">Twitter</a>
+        <a href="https://github.com/shadow-dawg" aria-label="Github">Github</a>
+        <a href="https://www.linkedin.com/in/kartikey-roshan-0aa3b2384/" aria-label="linkedin">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- small utilities ---
+    const q = s => document.querySelector(s);
+    const qa = s => document.querySelectorAll(s);
+
+    // RIPPLE effect already via CSS on hover, but add small click pulse
+    q('#joinBtn').addEventListener('click', e=>{
+      const btn = e.currentTarget;
+      btn.querySelector('.ripple').style.transform = 'scale(0)';
+      void btn.offsetWidth;
+      btn.querySelector('.ripple').style.transform = 'scale(2.85)';
+      // demo modal / action
+      alert('Thanks — join the beta! (demo)');
+    });
+
+    q('#nav-join').addEventListener('click', ()=>{ q('#emailInput').focus(); window.scrollTo({top:document.body.scrollHeight - 400, behavior:'smooth'}) });
+
+    // --- GSAP scroll-trigger reveals for elements with [data-anim] ---
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-anim]').forEach((el, i) => {
+      gsap.fromTo(el, {y:20, opacity:0}, {
+        y:0, opacity:1, duration:0.8, delay:i*0.08,
+        scrollTrigger:{trigger:el, start:"top 85%"}
+      })
+    });
+
+    // --- Canvas network inside hero map: draw lines between nodes ---
+    function initNetworkCanvas(canvasId, containerId) {
+      const container = q(containerId);
+      const canvas = q(canvasId);
+      function resize(){
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const ctx = canvas.getContext('2d');
+      const nodes = Array.from(container.querySelectorAll('.node'));
+
+      function getPos(node){
+        const rect = container.getBoundingClientRect();
+        // parse inline left/top percentages
+        const left = parseFloat(node.style.left || '50%');
+        const top = parseFloat(node.style.top || '50%');
+        const x = left/100 * rect.width;
+        const y = top/100 * rect.height;
+        return {x,y};
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // draw connecting lines
+        for(let i=0;i<nodes.length;i++){
+          for(let j=i+1;j<nodes.length;j++){
+            const a = getPos(nodes[i]), b=getPos(nodes[j]);
+            const dx = a.x - b.x, dy = a.y - b.y;
+            const dist = Math.hypot(dx,dy);
+            if(dist < 220){
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = 'rgba(0,255,240,' + (0.02 + (220-dist)/1000) + ')';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    // hero map
+    initNetworkCanvas('#networkCanvas', '#map');
+
+    // interactive map canvas for bee trail + lines
+    (function(){
+      const canvas = q('#interactiveCanvas');
+      const container = canvas.parentElement;
+      function resize(){
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
+      resize(); window.addEventListener('resize', resize);
+      const ctx = canvas.getContext('2d');
+
+      const nodes = Array.from(container.querySelectorAll('.node'));
+      let mouse = {x:-9999,y:-9999};
+      container.addEventListener('mousemove', (e)=>{
+        const r = container.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = e.clientY - r.top;
+      });
+      container.addEventListener('mouseleave', ()=>{ mouse.x = -9999; mouse.y = -9999 });
+
+      // bee trail (small fading dots)
+      const trail = [];
+      function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // draw lines between nodes based on distance and mouse proximity
+        nodes.forEach(n => {
+          const left = parseFloat(n.style.left); const top = parseFloat(n.style.top);
+          const x = left/100 * canvas.width;
+          const y = top/100 * canvas.height;
+          // small line to mouse if close
+          const dx = x-mouse.x, dy=y-mouse.y;
+          const dist = Math.hypot(dx,dy);
+          if(dist < 140){
+            ctx.beginPath();
+            ctx.moveTo(x,y); ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = 'rgba(255,213,79,0.12)'; ctx.lineWidth = 1.1;
+            ctx.stroke();
+          }
+        });
+
+        // trail
+        if(mouse.x > -9999){
+          trail.push({x:mouse.x, y:mouse.y, life:40});
+        }
+        for(let i=trail.length-1;i>=0;i--){
+          trail[i].life--;
+          if(trail[i].life<0) trail.splice(i,1);
+          else {
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255,213,79,' + (trail[i].life/40*0.7) + ')';
+            ctx.arc(trail[i].x, trail[i].y, Math.max(1, 6*(trail[i].life/40)), 0, Math.PI*2);
+            ctx.fill();
+          }
+        }
+
+        // draw small faint node circles
+        nodes.forEach(n => {
+          const left = parseFloat(n.style.left); const top = parseFloat(n.style.top);
+          const x = left/100 * canvas.width;
+          const y = top/100 * canvas.height;
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(0,255,240,0.06)';
+          ctx.arc(x,y,8,0,Math.PI*2);
+          ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      // Hover cards for nodes
+      const hoverCard = q('#hoverCard');
+      nodes.forEach(n=>{
+        n.addEventListener('mouseenter', ()=> {
+          hoverCard.style.display='block';
+          hoverCard.innerHTML = `<strong style="color:var(--yellow)">${n.dataset.title||'User'}</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">${n.dataset.desc||''}</div>`;
+        });
+        n.addEventListener('mousemove', (e)=>{
+          const r = container.getBoundingClientRect();
+          hoverCard.style.left = (e.clientX - r.left + 12) + 'px';
+          hoverCard.style.top = (e.clientY - r.top + 12) + 'px';
+        });
+        n.addEventListener('mouseleave', ()=> hoverCard.style.display='none');
+        n.addEventListener('click', ()=> alert((n.dataset.title||'Profile') + ' — (demo)'));
+      });
+    })();
+
+    // node tooltips inside hero map
+    (function(){
+      const container = q('#map');
+      const tooltip = q('#nodeTooltip');
+      container.querySelectorAll('.node').forEach(node=>{
+        node.addEventListener('mouseenter', ()=> {
+          tooltip.style.display='block';
+          tooltip.textContent = node.dataset.title || 'User';
+        });
+        node.addEventListener('mousemove', (e)=>{
+          const rect = container.getBoundingClientRect();
+          tooltip.style.left = (e.clientX - rect.left) + 'px';
+          tooltip.style.top = (e.clientY - rect.top - 18) + 'px';
+        });
+        node.addEventListener('mouseleave', ()=> tooltip.style.display='none' );
+        node.addEventListener('click', ()=> alert((node.dataset.title||'Profile') + ' — (demo)'));
+      });
+    })();
+
+    // simple carousel sliding (just changes inner text positions)
+    let active = 0;
+    const mockphones = [q('#mock1'), q('#mock2'), q('#mock3')];
+    function updateCarousel(){
+      mockphones.forEach((el,i)=>{
+        gsap.to(el, {x: (i-active)*320, opacity: i===active ? 1 : 0.6, scale: i===active?1:0.92, duration:0.6});
+      })
+    }
+    function slideCarousel(dir){
+      active = (active + dir + mockphones.length) % mockphones.length; updateCarousel();
+    }
+    updateCarousel();
+
+    // counters animation
+    function animateCount(id, to, dur=1.4){
+      const el = q(id);
+      gsap.fromTo({v:0},{v:to, duration:dur, ease:'power2', onUpdate:function(){ el.textContent = Math.floor(this.targets()[0].v) }});
+    }
+    // trigger counters on scroll into view
+    ScrollTrigger.create({
+      trigger: q('.counters'),
+      start: 'top 80%',
+      onEnter: ()=> {
+        animateCount('#c1', 520); animateCount('#c2', 108); animateCount('#c3', 52);
+      }
+    });
+
+    // filterNodes demo (does visually pulse nodes)
+    function filterNodes(tag){
+      const all = qa('#interactive .node');
+      all.forEach(n=> n.style.opacity = '0.15');
+
+      // for demo, show all if 'all'
+      if(tag === 'all'){
+        all.forEach(n=> n.style.opacity = '1');
+        return;
+      }
+      // simple mapping demo
+      all.forEach((n,i)=>{
+        const show = (tag==='dev' && i%2===0) || (tag==='design' && i%2===1);
+        n.style.opacity = show? '1':'0.15';
+      });
+    }
+    // small floating animations for hero elements
+    gsap.to('.hero-left h1', {y:-6, duration:4, repeat:-1, yoyo:true, ease:'sine.inOut'});
+    gsap.to('.hero-right .map-card', {y:8, duration:5, repeat:-1, yoyo:true, ease:'sine.inOut'});
+
+    // tiny accessibility: let keyboard focus show hint
+    document.addEventListener('keyup', (e)=>{ if(e.key==='Tab') document.body.classList.add('show-focus') });
+
+  </script>
+
+</body>
+</html>
