@@ -225,6 +225,11 @@
       </div>
     </div>
 
+    <div class="menu-toggle" aria-label="Menu">
+  <span></span><span></span><span></span>
+</div>
+
+
     <div class="links">
       <a href="#problem">Problem</a>
       <a href="#solution">Solution</a>
@@ -700,6 +705,12 @@
 
     // tiny accessibility: let keyboard focus show hint
     document.addEventListener('keyup', (e)=>{ if(e.key==='Tab') document.body.classList.add('show-focus') });
+    
+
+  const toggle = document.querySelector('.menu-toggle');
+  const links = document.querySelector('.links');
+  toggle?.addEventListener('click', ()=> links.classList.toggle('active'));
+
 
   </script>
 
